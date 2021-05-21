@@ -1,15 +1,16 @@
 from selenium import webdriver
 from time import sleep
-from config import Config
+from datetime import datetime
+from datetime import timedelta
 from selenium.webdriver.common.keys import Keys
-from datetime import datetime, timedelta
-from selenium import webdriver
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 
 
+from config import Config
 from sendEmail import Gmail
 
 def calc_date(days):
@@ -27,15 +28,18 @@ class NTNU:
 
 
     def __init__(self):
-        self.driver = webdriver.Chrome()
+        self.driver = None
         self.__username = Config.ntnu_username
         self.__password = Config.ntnu_password
+
 
     def change_login_info(self, username, passwd):
         self.__username = username
         self.__password = passwd
 
+
     def login(self):
+        self.driver = webdriver.Chrome()
         self.driver.get("https://innsida.ntnu.no/c/portal/login")
         
         # username
@@ -48,7 +52,7 @@ class NTNU:
         self.driver.find_element_by_xpath('/html/body/div/article/section[2]/div[1]/form[1]/button').click()
 
 
-        self.driver.find_element_by_id('students-menu-button').click()
+        # self.driver.find_element_by_id('students-menu-button').click()
 
 
     def book_room(self):
@@ -64,7 +68,7 @@ class NTNU:
         # end time
         duration = '04:00'  # this is duration from booking in hours
         select_end = Select(self.driver.find_element_by_id('duration'))
-        select_end.select_by_value('04:00')
+        select_end.select_by_value(duration)
 
         # date
         date = calc_date(12)
@@ -117,32 +121,72 @@ class NTNU:
         if fail:
             try:
                 self.driver.find_elements_by_xpath('/html/body/div[4]/div[2]/div[2]/section/form/div/section[1]/fieldset/ul/li[1]/div[1]/input').click()
-                fail = False
             except:
                 print("first try failed")
-                fail = True
+                try:
+                    self.driver.find_element_by_xpath(
+                        '/html/body/div[4]/div[2]/div[2]/section/form/div/section[1]/fieldset/ul/li/div[1]/input').click()
+                except:
+                    print('failed on second try. \n Canceling')
+                    self.driver.close()
+        
+        # order button
+        self.driver.find_element_by_id('rb-bestill').click()
+        
+        # description
+        description_text = "Studering"
+        description_box = self.driver.find_element_by_id('name')
+        description_box.send_keys(description_text)
+        
+        # confirm
+        self.driver.find_element_by_name('confirm')
 
-        if fail:
-            try:
-                self.driver.find_element_by_xpath('/html/body/div[4]/div[2]/div[2]/section/form/div/section[1]/fieldset/ul/li/div[1]/input').click()
-                fail = False
-            except:
-                fail = True
-                print('failed on second try. \n Canceling')
+        self.driver.find_element_by_name('sendmail')
+
+    def tab(self, **action):
+        options = {
+            'newtab': False,
+            'switch': None
+        }
+        for key, value in options.items():
+            if key in action.keys():
+                options[key] = action[key]
+                print(options)
+
+        # open new tab and switch to it
+        if options['newtab'] and options['switch'] is True:
+            self.driver.execute_script("window.open('');")
+            self.driver.switch_to.window(self.driver.window_handles[-1])
+            # if url is spesified go to that url
+            if str(options['newtab'])[:3] == 'http':
+                self.driver.get(options['new_tab'])
 
 
+        if type(options['switch']) is int:
+            tab = options['switch']
+            self.driver.switch_to.window(self.driver.window_handles[tab])
 
+    
+    def matte_video_hack(self, intervals):
+        self.login()
+        sleep(1)
 
+        for i in range(intervals):
+            self.tab(newtab=True, switch=True)
+            self.driver.get('https://ntnu.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=111ff78f-8ea0-4c9d-a5d1-ac8b0076d96e')
 
+            # press login
+            self.driver.find_element_by_id('PageContentPlaceholder_loginControl_externalLoginButton').click()
+            self.driver.find_elements_by_name('yes')
 
+            sleep(2)
 
+            for i in range(5):
+                self.driver.find_element_by_id('quickRewindButton').click()
+                sleep(0.5)
 
-
-
-
-
-
-
+            sleep(1)
+            self.driver.find_element_by_id('playButton').click()
 
 
         
@@ -150,20 +194,15 @@ class NTNU:
 
 
 
-    def __wait_and_get_by_id(self, element_id: str):
-
-        element = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, element_id))
-        )
-        element.click()
-
-        return element
 
 
 test = NTNU()
 
-test.login()
-test.book_room()
+
+test.matte_video_hack(3)
+
+
+
 
 
 input(" press any key to close --> ")
