@@ -25,8 +25,6 @@ def calc_date(days):
 
 class NTNU:
 
-
-
     def __init__(self):
         self.driver = None
         self.__username = Config.ntnu_username
@@ -189,21 +187,10 @@ class NTNU:
             self.driver.find_element_by_id('playButton').click()
 
 
-        
-
-
-
-
-
 
 test = NTNU()
 
 
-test.matte_video_hack(3)
-
-
-
-
-
 input(" press any key to close --> ")
 test.driver.close()
+

@@ -9,6 +9,7 @@ from sendEmail import Gmail
 browser = webdriver.Chrome()
 
 
+
 def login_to_blackboard():
     go_to_login_path = "/html/body/div/div[1]/div/div[3]/div[2]/ul/li[1]/a"
     username_path = "/html/body/div/article/section[2]/div[1]/form[1]/div[1]/input"
