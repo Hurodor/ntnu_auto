@@ -151,7 +151,7 @@ class NTNU:
                     self.driver.close()
 
         # order button
-        # sleep(2) # todo: wait for element to show up
+        # sleep(2)
         # self.driver.find_element_by_id('rb-bestill').click()
         WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "rb-bestill"))).click()
         
