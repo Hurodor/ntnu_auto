@@ -53,18 +53,33 @@ class NTNU:
         # self.driver.find_element_by_id('students-menu-button').click()
 
 
-    def book_room(self):
+    def book_room(self, **kwargs):
         """has to continue after login"""
         # go to room-booking
+        parameters = {
+            'start_time': '08:00',
+            'duration': '04:00',
+            'days': 12,   # this is duration from booking in hours7
+            'area': 'Gløshaugen',
+            'building': "Elektro E/F",
+            'min_people': None,
+            'room_ids': {'E204': 'input_341E204',
+                        'F204': 'input_341F204',
+                        'EL23': 'input_341EL23',
+                        'F404': 'input_341F404',
+                        'F304': 'input_341F304'}
+        }
+
         self.driver.get("http://www.ntnu.no/romres")
 
+
         # start time
-        start_time = '08:00'
+        start_time = parameters['start_time']
         select_start = Select(self.driver.find_element_by_id("start"))
         select_start.select_by_value(start_time)
 
         # end time
-        duration = '04:00'  # this is duration from booking in hours
+        duration = parameters['duration']
         select_end = Select(self.driver.find_element_by_id('duration'))
         select_end.select_by_value(duration)
 
@@ -76,12 +91,12 @@ class NTNU:
         select_date.send_keys(Keys.ENTER)
 
         # area
-        area = 'Gløshaugen'
+        area = parameters['area']
         select_area = Select(self.driver.find_element_by_id('area'))
         select_area.select_by_visible_text(area)
         
         # building
-        building = "Elektro E/F"
+        building = parameters['building']
         select_building = Select(self.driver.find_element_by_id('building'))
         select_building.select_by_visible_text(building)
 
@@ -95,18 +110,12 @@ class NTNU:
         sleep(1)
         # press submit button
         self.driver.find_element_by_id('preformsubmit').click()
-
-        # choose from available
-        room_ids = {'E204': 'input_341E204',
-                    'F204': 'input_341F204',
-                    'EL23': 'input_341EL23',
-                    'F404': 'input_341F404',
-                    'F304': 'input_341F304'}
+        
         # UNCOMMENT LINE UNDER TO GET TEXT ELEMENT OF ALL ROOMS THAT OCCURS
         # available_rooms_text = self.driver.find_element_by_id('room_table').text
         # change this if you want another room
-        room_id = room_ids['E204']
-
+        
+        room_id = parameters['room_ids']['E204']
         # choose the room
         try:
             self.driver.find_element_by_id(room_id).click()
@@ -140,6 +149,7 @@ class NTNU:
         self.driver.find_element_by_name('confirm')
 
         self.driver.find_element_by_name('sendmail')
+
 
     def tab(self, **action):
         options = {
@@ -186,11 +196,10 @@ class NTNU:
             sleep(1)
             self.driver.find_element_by_id('playButton').click()
 
+            self.driver.close()
 
 
-test = NTNU()
-
-
-input(" press any key to close --> ")
-test.driver.close()
+if __name__ == '__main__':
+    book = NTNU()
+    book.book_room()
 
