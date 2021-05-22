@@ -22,7 +22,6 @@ def calc_date(days):
     return book_date
 
 
-
 class NTNU:
 
     def __init__(self):
@@ -35,16 +34,20 @@ class NTNU:
         self.__username = username
         self.__password = passwd
 
+    def start_session(self):
+        self.driver = webdriver.Chrome('drivers/chromedriver')
+
 
     def login(self):
-        self.driver = webdriver.Chrome()
+        """this loges in to ntnu"""
+        self.start_session()
         self.driver.get("https://innsida.ntnu.no/c/portal/login")
         
         # username
-        self.driver.find_element_by_id('username').send_keys(Config.ntnu_username)
+        self.driver.find_element_by_id('username').send_keys(self.__username)
 
         # password
-        self.driver.find_element_by_id('password').send_keys(Config.ntnu_password)
+        self.driver.find_element_by_id('password').send_keys(self.__password)
 
         # click login button
         self.driver.find_element_by_xpath('/html/body/div/article/section[2]/div[1]/form[1]/button').click()
@@ -63,11 +66,8 @@ class NTNU:
             'area': 'Gløshaugen',
             'building': "Elektro E/F",
             'min_people': None,
-            'room_ids': {'E204': 'input_341E204',
-                        'F204': 'input_341F204',
-                        'EL23': 'input_341EL23',
-                        'F404': 'input_341F404',
-                        'F304': 'input_341F304'}
+            'room_id': 'E204',
+            'description_text':  "Studering"
         }
 
         self.driver.get("http://www.ntnu.no/romres")
@@ -114,8 +114,15 @@ class NTNU:
         # UNCOMMENT LINE UNDER TO GET TEXT ELEMENT OF ALL ROOMS THAT OCCURS
         # available_rooms_text = self.driver.find_element_by_id('room_table').text
         # change this if you want another room
+
+        room_ids = {'E204': 'input_341E204',
+                     'F204': 'input_341F204',
+                     'EL23': 'input_341EL23',
+                     'F404': 'input_341F404',
+                     'F304': 'input_341F304'}
+
         
-        room_id = parameters['room_ids']['E204']
+        room_id = room_ids[parameters['room_id']]
         # choose the room
         try:
             self.driver.find_element_by_id(room_id).click()
@@ -146,12 +153,15 @@ class NTNU:
         description_box.send_keys(description_text)
         
         # confirm
-        self.driver.find_element_by_name('confirm')
 
-        self.driver.find_element_by_name('sendmail')
+        # self.driver.find_element_by_name('confirm').click()
 
+        # self.driver.find_element_by_name('sendmail').click()
+
+        self.driver.quit()
 
     def tab(self, **action):
+        """currently supported kwargs: newtab, switch"""
         options = {
             'newtab': False,
             'switch': None
@@ -174,32 +184,11 @@ class NTNU:
             tab = options['switch']
             self.driver.switch_to.window(self.driver.window_handles[tab])
 
-    
-    def matte_video_hack(self, intervals):
-        self.login()
-        sleep(1)
-
-        for i in range(intervals):
-            self.tab(newtab=True, switch=True)
-            self.driver.get('https://ntnu.cloud.panopto.eu/Panopto/Pages/Viewer.aspx?id=111ff78f-8ea0-4c9d-a5d1-ac8b0076d96e')
-
-            # press login
-            self.driver.find_element_by_id('PageContentPlaceholder_loginControl_externalLoginButton').click()
-            self.driver.find_elements_by_name('yes')
-
-            sleep(2)
-
-            for i in range(5):
-                self.driver.find_element_by_id('quickRewindButton').click()
-                sleep(0.5)
-
-            sleep(1)
-            self.driver.find_element_by_id('playButton').click()
-
-            self.driver.close()
 
 
 if __name__ == '__main__':
     book = NTNU()
-    book.book_room()
+    book.start_session()
+
+
 
