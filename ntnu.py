@@ -6,6 +6,10 @@ from datetime import timedelta
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from config import Config
 
 
@@ -58,7 +62,7 @@ class NTNU:
 
     def book_room(self, **kwargs):
         """has to continue after login"""
-        # go to room-booking
+        # pass in kwargs corresponding to parameters to change it
         parameters = {
             'start_time': '08:00',
             'duration': '04:00',
@@ -69,6 +73,8 @@ class NTNU:
             'room_id': 'E204',
             'description_text':  "Studering"
         }
+        for key, value in kwargs.items():
+            parameters[key] = value
 
         self.driver.get("http://www.ntnu.no/romres")
 
@@ -143,9 +149,11 @@ class NTNU:
                 except:
                     print('failed on second try. \n Canceling')
                     self.driver.close()
-        
+
         # order button
-        self.driver.find_element_by_id('rb-bestill').click()
+        # sleep(2) # todo: wait for element to show up
+        # self.driver.find_element_by_id('rb-bestill').click()
+        WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "rb-bestill"))).click()
         
         # description
         description_text = "Studering"
@@ -154,9 +162,9 @@ class NTNU:
         
         # confirm
 
-        # self.driver.find_element_by_name('confirm').click()
+        self.driver.find_element_by_name('confirm').click()
 
-        # self.driver.find_element_by_name('sendmail').click()
+        self.driver.find_element_by_name('sendmail').click()
 
         self.driver.quit()
 
@@ -188,6 +196,7 @@ class NTNU:
 if __name__ == '__main__':
     book = NTNU()
     book.login()
+    book.book_room()
 
 
 
