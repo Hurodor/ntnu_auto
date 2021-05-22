@@ -2,6 +2,15 @@ import smtplib, ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import Config
+import keyring
+
+
+
+gmail = "hurodor.python@gmail.com"
+gmail_receiver = "vegar.karlsen1201@gmail.com"
+gmail_password = keyring.get_password('python_gmail', gmail)
+
+
 
 class Gmail:
     smtp_server = "smtp.gmail.com"
@@ -9,8 +18,8 @@ class Gmail:
 
 
     mail_mal = {'message': None,
-                'From': Config.gmail,
-                'To': Config.gmail_receiver,
+                'From': gmail,
+                'To': gmail_receiver,
                 'Subject': "Room Booking"}
 
     def __init__(self, email, passwd,):

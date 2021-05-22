@@ -1,22 +1,18 @@
-from selenium import webdriver
+import keyring
 from time import sleep
+from selenium import webdriver
 from datetime import datetime
 from datetime import timedelta
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 
-
 from config import Config
-from sendEmail import Gmail
+
 
 def calc_date(days):
     """return: date in 'days' number of days """
     today = datetime.today()
-    two_weeks = today + timedelta(days=14)
+    two_weeks = today + timedelta(days=days)
     book_date = two_weeks.strftime("%d.%m.%Y")
 
     return book_date
@@ -26,8 +22,9 @@ class NTNU:
 
     def __init__(self):
         self.driver = None
-        self.__username = Config.ntnu_username
-        self.__password = Config.ntnu_password
+        self.__username = Config.username
+        self.__password = keyring.get_password('ntnu', self.__username)
+        self.chromedriver_path = Config.chromedriver
 
 
     def change_login_info(self, username, passwd):
@@ -35,12 +32,15 @@ class NTNU:
         self.__password = passwd
 
     def start_session(self):
-        self.driver = webdriver.Chrome('drivers/chromedriver')
+        self.driver = webdriver.Chrome(self.chromedriver_path)
 
 
     def login(self):
         """this loges in to ntnu"""
         self.start_session()
+
+        self.driver.minimize_window()
+
         self.driver.get("https://innsida.ntnu.no/c/portal/login")
         
         # username
@@ -84,7 +84,7 @@ class NTNU:
         select_end.select_by_value(duration)
 
         # date
-        date = calc_date(12)
+        date = calc_date(14)    # max
         select_date = self.driver.find_element_by_id('preset_date')
         select_date.clear()
         select_date.send_keys(date)
@@ -185,10 +185,9 @@ class NTNU:
             self.driver.switch_to.window(self.driver.window_handles[tab])
 
 
-
 if __name__ == '__main__':
     book = NTNU()
-    book.start_session()
+    book.login()
 
 
 
