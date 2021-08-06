@@ -30,7 +30,6 @@ class NTNU:
         self.__password = keyring.get_password('ntnu', self.__username)
         self.chromedriver_path = Config.chromedriver
 
-
     def change_login_info(self, username, passwd):
         self.__username = username
         self.__password = passwd
@@ -38,15 +37,14 @@ class NTNU:
     def start_session(self):
         self.driver = webdriver.Chrome(self.chromedriver_path)
 
-
     def login(self):
         """this loges in to ntnu"""
         self.start_session()
 
-        self.driver.minimize_window()
+        # self.driver.minimize_window()
 
         self.driver.get("https://innsida.ntnu.no/c/portal/login")
-        
+
         # username
         self.driver.find_element_by_id('username').send_keys(self.__username)
 
@@ -54,11 +52,10 @@ class NTNU:
         self.driver.find_element_by_id('password').send_keys(self.__password)
 
         # click login button
+        # WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.xPATH, "/html/body/div/article/section[2]/div[1]/form[1]/button"))).click()
         self.driver.find_element_by_xpath('/html/body/div/article/section[2]/div[1]/form[1]/button').click()
 
-
         # self.driver.find_element_by_id('students-menu-button').click()
-
 
     def book_room(self, **kwargs):
         """has to continue after login"""
@@ -66,18 +63,24 @@ class NTNU:
         parameters = {
             'start_time': '08:00',
             'duration': '04:00',
-            'days': 12,   # this is duration from booking in hours7
+            'days': 12,  # this is duration from booking in hours7
             'area': 'Gløshaugen',
             'building': "Elektro E/F",
             'min_people': None,
             'room_id': 'E204',
-            'description_text':  "Studering"
+            'description_text': "Studering"
         }
+
         for key, value in kwargs.items():
             parameters[key] = value
 
         self.driver.get("http://www.ntnu.no/romres")
 
+        # tries to press yes, comtinue button, if element not found we skip this part as we dont need it
+        try:
+            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.NAME, "Yes"))).click()
+        except Exception:
+            pass
 
         # start time
         start_time = parameters['start_time']
@@ -90,7 +93,7 @@ class NTNU:
         select_end.select_by_value(duration)
 
         # date
-        date = calc_date(14)    # max
+        date = calc_date(14)  # max
         select_date = self.driver.find_element_by_id('preset_date')
         select_date.clear()
         select_date.send_keys(date)
@@ -100,7 +103,7 @@ class NTNU:
         area = parameters['area']
         select_area = Select(self.driver.find_element_by_id('area'))
         select_area.select_by_visible_text(area)
-        
+
         # building
         building = parameters['building']
         select_building = Select(self.driver.find_element_by_id('building'))
@@ -113,25 +116,26 @@ class NTNU:
             people_input_box.send_keys(min_people)
             people_input_box.send_keys(Keys.ENTER)
 
-        sleep(1)
-        # press submit button
+        # press "vis ledige rom" button
         self.driver.find_element_by_id('preformsubmit').click()
-        
+
         # UNCOMMENT LINE UNDER TO GET TEXT ELEMENT OF ALL ROOMS THAT OCCURS
         # available_rooms_text = self.driver.find_element_by_id('room_table').text
         # change this if you want another room
 
         room_ids = {'E204': 'input_341E204',
-                     'F204': 'input_341F204',
-                     'EL23': 'input_341EL23',
-                     'F404': 'input_341F404',
-                     'F304': 'input_341F304'}
+                    'F204': 'input_341F204',
+                    'E304': 'input_341E304',
+                    'EL23': 'input_341EL23',
+                    'F404': 'input_341F404',
+                    'F304': 'input_341F304'}
 
-        
         room_id = room_ids[parameters['room_id']]
         # choose the room
+
         try:
-            self.driver.find_element_by_id(room_id).click()
+            WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, room_id))).click()
+            # self.driver.find_element_by_id(room_id).click()
             fail = False
         except:
             print(f"room: {room_id} not found. \n trying to book a random room")
@@ -140,7 +144,8 @@ class NTNU:
         # booking your desired room failed, will continue to try booking first element
         if fail:
             try:
-                self.driver.find_elements_by_xpath('/html/body/div[4]/div[2]/div[2]/section/form/div/section[1]/fieldset/ul/li[1]/div[1]/input').click()
+                self.driver.find_elements_by_xpath(
+                    '/html/body/div[4]/div[2]/div[2]/section/form/div/section[1]/fieldset/ul/li[1]/div[1]/input').click()
             except:
                 print("first try failed")
                 try:
@@ -151,19 +156,19 @@ class NTNU:
                     self.driver.close()
 
         # order button
-        # sleep(2)
-        # self.driver.find_element_by_id('rb-bestill').click()
-        WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, "rb-bestill"))).click()
-        
-        # description
-        description_text = "Studering"
-        description_box = self.driver.find_element_by_id('name')
-        description_box.send_keys(description_text)
-        
-        # confirm
+        self.driver.find_element_by_id('rb-bestill').click()
 
+        # description
+        description_text = parameters['description_text']
+        # description_box = self.driver.find_element_by_id('name')
+        description_box = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, 'name')))
+        description_box.send_keys(description_text)
+
+
+        # confirm buttton
         self.driver.find_element_by_name('confirm').click()
 
+        # send comfirmation email
         self.driver.find_element_by_name('sendmail').click()
 
         self.driver.quit()
@@ -187,7 +192,6 @@ class NTNU:
             if str(options['newtab'])[:3] == 'http':
                 self.driver.get(options['new_tab'])
 
-
         if type(options['switch']) is int:
             tab = options['switch']
             self.driver.switch_to.window(self.driver.window_handles[tab])
@@ -197,6 +201,3 @@ if __name__ == '__main__':
     book = NTNU()
     book.login()
     book.book_room()
-
-
-
