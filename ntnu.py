@@ -62,8 +62,8 @@ class NTNU:
         # pass in kwargs corresponding to parameters to change it
         parameters = {
             'start_time': '08:00',
-            'duration': '04:00',
-            'days': 12,  # this is duration from booking in hours7
+            'duration': '04:00',# this is duration from booking in hours
+            'days': 14,
             'area': 'Gløshaugen',
             'building': "Elektro E/F",
             'min_people': None,
@@ -130,6 +130,7 @@ class NTNU:
                     'F404': 'input_341F404',
                     'F304': 'input_341F304'}
 
+        
         room_id = room_ids[parameters['room_id']]
         # choose the room
 
