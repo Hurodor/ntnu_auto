@@ -3,10 +3,11 @@ import json
 from getpass import getpass
 
 chrome_driver_paths = {
-        'w': 'drivers/chromedriver_windows.exe',
-        'l': 'drivers/chromedriver_linux',
-        'm': 'drivers/chromedriver_mac'
-    }
+    'w': 'drivers/chromedriver_windows.exe',
+    'l': 'drivers/chromedriver_linux',
+    'm': 'drivers/chromedriver_mac'
+}
+
 
 # reads settings from settings.json
 def get_settings():
@@ -26,9 +27,6 @@ def write_room_settings(**kwargs):
         json.dump(settings, fw)
 
 
-
-
-
 # configure username and password
 def setup():
     system = input("which operation system are you running on? \n'w' for windows, 'l' for linux, 'm' for mac \n ->")
@@ -44,13 +42,11 @@ def setup():
     if system in chrome_driver_paths.keys():
         settings['driver_path'] = chrome_driver_paths[system]
 
-
     with open("settings.json", "w") as fw:
         json.dump(settings, fw)
 
 
 class Config:
-
     settings = get_settings()
     username = settings['ntnu']['username']
     chromedriver = settings['driver_path']
@@ -58,9 +54,3 @@ class Config:
 
 if __name__ == '__main__':
     setup()
-
-
-
-
-
-

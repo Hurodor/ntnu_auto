@@ -11,7 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 from config import Config
-
+from supported_settings import valid_room_settings
 
 
 def calc_date(days):
@@ -63,7 +63,7 @@ class NTNU:
         # pass in kwargs corresponding to parameters to change it
         parameters = {
             'start_time': '08:00',
-            'duration': '04:00',# this is duration from booking in hours
+            'duration': '04:00',  # this is duration from booking in hours
             'days': 14,
             'area': 'Gløshaugen',
             'building': "Elektro E/F",
@@ -74,6 +74,8 @@ class NTNU:
 
         for key, value in kwargs.items():
             parameters[key] = value
+
+        print(parameters)  # todo:
 
         self.driver.get("http://www.ntnu.no/romres")
 
@@ -123,18 +125,10 @@ class NTNU:
 
         # UNCOMMENT LINE UNDER TO GET TEXT ELEMENT OF ALL ROOMS THAT OCCURS
         # available_rooms_text = self.driver.find_element_by_id('room_table').text
-        # change this if you want another room
 
-        # todo: this has to be global in project
-        room_ids = {'E204': 'input_341E204',
-                    'F204': 'input_341F204',
-                    'E304': 'input_341E304',
-                    'EL23': 'input_341EL23',
-                    'F404': 'input_341F404',
-                    'F304': 'input_341F304'}
+        # this fetches the right input str for the chosen room (see supported_settings.py)
+        room_id = valid_room_settings[parameters['area']][parameters['building']][parameters['room_id']]
 
-        
-        room_id = room_ids[parameters['room_id']]
         # choose the room
 
         try:
@@ -167,7 +161,6 @@ class NTNU:
         # description_box = self.driver.find_element_by_id('name')
         description_box = WebDriverWait(self.driver, 5).until(EC.presence_of_element_located((By.ID, 'name')))
         description_box.send_keys(description_text)
-
 
         # confirm buttton
         self.driver.find_element_by_name('confirm').click()
