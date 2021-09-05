@@ -15,6 +15,20 @@ def get_settings():
 
     return settings
 
+
+def write_room_settings(**kwargs):
+    settings = get_settings()
+
+    for key, value in kwargs.items():
+        settings['room_settings'][key] = value
+
+    with open('settings.json', 'w') as fw:
+        json.dump(settings, fw)
+
+
+
+
+
 # configure username and password
 def setup():
     system = input("which operation system are you running on? \n'w' for windows, 'l' for linux, 'm' for mac \n ->")

@@ -13,6 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from config import Config
 
 
+
 def calc_date(days):
     """return: date in 'days' number of days """
     today = datetime.today()
@@ -93,7 +94,8 @@ class NTNU:
         select_end.select_by_value(duration)
 
         # date
-        date = calc_date(14)  # max
+        days = parameters['days']
+        date = calc_date(days)  # max
         select_date = self.driver.find_element_by_id('preset_date')
         select_date.clear()
         select_date.send_keys(date)
@@ -110,7 +112,7 @@ class NTNU:
         select_building.select_by_visible_text(building)
 
         # min people
-        min_people = None
+        min_people = parameters['min_people']
         if min_people:
             people_input_box = self.driver.find_element_by_id('size')
             people_input_box.send_keys(min_people)
@@ -123,6 +125,7 @@ class NTNU:
         # available_rooms_text = self.driver.find_element_by_id('room_table').text
         # change this if you want another room
 
+        # todo: this has to be global in project
         room_ids = {'E204': 'input_341E204',
                     'F204': 'input_341F204',
                     'E304': 'input_341E304',

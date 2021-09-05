@@ -1,1 +1,16 @@
-{"ntnu": {"username": "vegkar"}, "driver_path": "drivers/chromedriver_windows.exe", "room_settings": {}}
+{
+  "ntnu": {
+    "username": "vegkar"
+  },
+  "driver_path": "drivers/chromedriver_windows.exe",
+  "room_settings": {
+    "start_time": "08:00",
+    "duration": "04:00",
+    "days": 14,
+    "area": "Gl\u00c3\u00b8shaugen",
+    "building": "Elektro E/F",
+    "min_people": 0,
+    "room_id": "E204",
+    "description_text": "Studering"
+  }
+}
