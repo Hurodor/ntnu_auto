@@ -75,7 +75,6 @@ class NTNU:
         for key, value in kwargs.items():
             parameters[key] = value
 
-        print(parameters)  # todo:
 
         self.driver.get("http://www.ntnu.no/romres")
 

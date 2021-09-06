@@ -1,9 +1,13 @@
 import keyring
 import json
 from getpass import getpass
+import pathlib
+
+path_to_project_folder = pathlib.Path(__file__).parent.resolve()
+json_path = str(path_to_project_folder) + "\settings.json"
 
 chrome_driver_paths = {
-    'w': 'drivers/chromedriver_windows.exe',
+    'w': str(path_to_project_folder) + '\drivers\chromedriver_windows.exe',
     'l': 'drivers/chromedriver_linux',
     'm': 'drivers/chromedriver_mac'
 }
@@ -11,7 +15,7 @@ chrome_driver_paths = {
 
 # reads settings from settings.json
 def get_settings():
-    with open("settings.json", "r") as fr:
+    with open(json_path, "r") as fr:
         settings = json.load(fr)
 
     return settings
@@ -23,7 +27,7 @@ def write_room_settings(**kwargs):
     for key, value in kwargs.items():
         settings['room_settings'][key] = value
 
-    with open('settings.json', 'w') as fw:
+    with open(json_path, 'w') as fw:
         json.dump(settings, fw)
 
 
@@ -42,7 +46,7 @@ def setup():
     if system in chrome_driver_paths.keys():
         settings['driver_path'] = chrome_driver_paths[system]
 
-    with open("settings.json", "w") as fw:
+    with open(json_path, "w") as fw:
         json.dump(settings, fw)
 
 
