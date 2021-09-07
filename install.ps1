@@ -9,10 +9,12 @@ if (test-path $profile)
 {
     Add-Content $path_to_profile_ntnu_script "$current_path\venv\Scripts\python.exe $current_path\commands.py $args"
     Add-Content $profile "Set-Alias ntb $path_to_profile_ntnu_script"
+    Add-Content $profile "$path_to_ntb = $current_path"
 }else {
     new-item -path $profile -itemtype file -force
 
     Add-Content $path_to_profile_ntnu_script "$current_path\venv\Scripts\python.exe $current_path\commands.py $args"
     Add-Content $profile "Set-Alias ntb $path_to_profile_ntnu_script"
+    Add-Content $profile "$path_to_ntb = $current_path"
 }
 

@@ -79,14 +79,10 @@ def book():
     ntnu = NTNU()
     settings = config.get_settings()['room_settings']
 
-    # maybe add better debug
-    try:
-        ntnu.login()
-        ntnu.book_room(**settings)
-    except Exception:
-        click.echo("\nsomething went wrong, \nplease check your settings. ")
+    # debug?
+    ntnu.login()
+    ntnu.book_room(**settings)
 
-    click.echo("Booking complete!")
 
 
 main.add_command(login)

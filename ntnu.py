@@ -35,7 +35,15 @@ class NTNU:
         self.__username = username
         self.__password = passwd
 
-    def start_session(self):
+    def start_session(self, headless=True):
+        """this function starts selenium, you can toggle gui with headless"""
+
+        if headless:
+            options = webdriver.ChromeOptions()
+            options.add_argument('--headless')
+            self.driver = webdriver.Chrome(self.chromedriver_path, options=options)
+            return
+
         self.driver = webdriver.Chrome(self.chromedriver_path)
 
     def login(self):
@@ -166,6 +174,8 @@ class NTNU:
 
         # send comfirmation email
         self.driver.find_element_by_name('sendmail').click()
+
+        print("\nBooking complete! \n-----------------------------------------------")
 
         self.driver.quit()
 
