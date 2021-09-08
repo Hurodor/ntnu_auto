@@ -121,6 +121,7 @@ def auto_delete():
 def toogle_active(enable):
     if enable:
         power.toggle_activation(False)
+        return
 
     power.toggle_activation()
 
