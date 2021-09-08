@@ -118,12 +118,17 @@ def auto_delete():
 
 @click.command()
 @click.option("--enable/--disable", '-e/-d')
-def toogle_active(enable):
+def auto_activation(enable):
     if enable:
         power.toggle_activation(False)
         return
 
     power.toggle_activation()
+
+@click.command()
+def auto_info():
+    power.get_task_info()
+
 
 
 main.add_command(login)
@@ -133,7 +138,8 @@ main.add_command(book)
 main.add_command(supported_rooms)
 main.add_command(setup_auto)
 main.add_command(auto_delete)
-main.add_command(toogle_active)
+main.add_command(auto_activation)
+main.add_command(auto_info)
 
 if __name__ == '__main__':
     main()

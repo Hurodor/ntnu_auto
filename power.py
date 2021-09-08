@@ -62,3 +62,6 @@ def check_if_task_exsists():
         return True
     return False
 
+def get_task_info():
+    command = """Get-ScheduledTaskInfo -TaskName "ntnu_auto_booking" """
+    run(command)
