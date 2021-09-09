@@ -16,3 +16,4 @@ if (test-path $profile)
     Add-Content $profile "Set-Alias ntb $path_to_profile_ntnu_script"
 }
 
+echo("\n Welcome to ntb! \n ntb --help to see commands")

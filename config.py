@@ -57,6 +57,10 @@ def write_room_settings(**kwargs):
 
 # configure username and password
 def setup():
+
+    # if the file does not already exists make it
+
+
     system = input("which operation system are you running on? \n'w' for windows, 'l' for linux, 'm' for mac \n ->")
     username = input('username-> ')
     passwd = getpass("password-> ")
@@ -74,6 +78,11 @@ def setup():
         json.dump(settings, fw)
 
 
+# This has to come before class to prevent bug...
+if not os.path.isfile(json_path):
+    make_settings_file()
+
+
 class Config:
     settings = get_settings()
     username = settings['ntnu']['username']
@@ -81,8 +90,4 @@ class Config:
 
 
 if __name__ == '__main__':
-    # if the file does not already exists make it
-    if not os.path.isfile(json_path):
-        make_settings_file()
-
     setup()

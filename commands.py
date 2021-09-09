@@ -152,15 +152,19 @@ def auto_activation(enable):
 
     power.toggle_activation()
 
+
 @click.command()
 def auto_info():
     """Gives info of auto booking task, mostly used to debug"""
     if power.check_if_task_exsists():
-
         power.get_task_info()
         return
 
     print("There has not been made a task yet")
+
+@click.command()
+def update():
+    power.update()
 
 
 
@@ -173,6 +177,7 @@ main.add_command(setup_auto)
 main.add_command(auto_delete)
 main.add_command(auto_activation)
 main.add_command(auto_info)
+main.add_command(update)
 
 if __name__ == '__main__':
     main()
