@@ -1,5 +1,4 @@
 import keyring
-from time import sleep
 from selenium import webdriver
 from datetime import datetime
 from datetime import timedelta
@@ -38,17 +37,19 @@ class NTNU:
     def start_session(self, headless=True):
         """this function starts selenium, you can toggle gui with headless"""
 
+
         if headless:
             options = webdriver.ChromeOptions()
             options.add_argument('--headless')
+            options.add_argument('--log-level=off')
             self.driver = webdriver.Chrome(self.chromedriver_path, options=options)
             return
 
         self.driver = webdriver.Chrome(self.chromedriver_path)
 
-    def login(self):
+    def login(self, headless=True):
         """this loges in to ntnu"""
-        self.start_session()
+        self.start_session(headless)
 
         # self.driver.minimize_window()
 
@@ -78,7 +79,7 @@ class NTNU:
             'min_people': None,
             'room_id': 'E204',
             'description_text': "Studering"
-        }
+      }
 
         for key, value in kwargs.items():
             parameters[key] = value
@@ -134,7 +135,7 @@ class NTNU:
         # available_rooms_text = self.driver.find_element_by_id('room_table').text
 
         # this fetches the right input str for the chosen room (see supported_settings.py)
-        room_id = valid_room_settings[parameters['area']][parameters['building']][parameters['room_id']]
+        room_id = valid_room_settings[0][parameters['area']][parameters['building']][parameters['room_id']]
 
         # choose the room
 
@@ -157,8 +158,9 @@ class NTNU:
                     self.driver.find_element_by_xpath(
                         '/html/body/div[4]/div[2]/div[2]/section/form/div/section[1]/fieldset/ul/li/div[1]/input').click()
                 except:
-                    print('failed on second try. \n Canceling')
+                    print('failed on second try. \nCanceling')
                     self.driver.close()
+                    return
 
         # order button
         self.driver.find_element_by_id('rb-bestill').click()
@@ -205,5 +207,5 @@ class NTNU:
 
 if __name__ == '__main__':
     book = NTNU()
-    book.login()
+    book.login(False)
     book.book_room()

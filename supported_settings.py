@@ -1,5 +1,6 @@
 
-valid_room_settings = {
+# This only works when there is one area to choose from
+valid_room_settings = [{
     "Gløshaugen": {
         "Elektro E/F": {
             'E204': 'input_341E204',
@@ -11,6 +12,7 @@ valid_room_settings = {
         }
     }
 }
+]
 
 # default settings, should work
 default_room_settings = {

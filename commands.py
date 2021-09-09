@@ -38,6 +38,7 @@ def main():
 # Prints out current settings
 @click.command()
 def get_settings():
+    """Print out current settings for choosing room"""
     current_settings = config.get_settings()
     printstr = ""
     for key, value in current_settings['room_settings'].items():
@@ -47,14 +48,29 @@ def get_settings():
 
 @click.command()
 def supported_rooms():
-    json_formatted_str = json.dumps(valid_sett, indent=2)
-    click.echo(f"Current supported rooms (on rooms lock at key, not value):\n{json_formatted_str}")
+    """Print out what rooms that is currently implemented """
+    message = ""
+    for i in valid_sett:
+        # loop trough areas
+        for area, buildings in i.items():
+            message += area + ":\n    "
+            # loop trough buildings
+            for building, rooms in buildings.items():
+                message += building + "\n       "
+                # loop trough rooms
+                for room, data in rooms.items():
+                    message += room + "\n       "
+    message = message[:-4]
+
+    # prints formated string
+    click.echo(f"{message}")
 
 
 # this sets all the room paramteres
 @click.command()
 @click.option("--default/--no-default", '-d/-nd', default=False)
 def set_room(default):
+    """Change room settings"""
     if default:
         settings = df_sett
     else:
@@ -72,22 +88,31 @@ def set_room(default):
 # configure chromedriver, and login info
 @click.command()
 def login():
+    """provide login information to log in to NTNU,
+        has to be done in order for program to work"""
+
     config.setup()
 
 
 @click.command()
-def book():
+@click.option("--debug/--no-debug", "-d/-nd", default=False)
+def book(debug):
+    """This will try book your room based on given room-settings"""
     ntnu = NTNU()
     settings = config.get_settings()['room_settings']
 
-    # debug?
-    ntnu.login()
-    ntnu.book_room(**settings)
+    # Has to be opposite of debug because of how login function is designed
+    ntnu.login(not debug)
+    try:
+        ntnu.book_room(**settings)
+    except Exception:
+        ntnu.driver.quit()
 
 
 @click.command()
 @click.option('--time', '-t', prompt="You have to choose time: ")
 def setup_auto(time):
+    """Set up auto booking, if the auto booking is already initialized you can change days and time to auto book on"""
     if power.check_if_task_exsists():
 
         # prompt for choosing days
@@ -109,6 +134,7 @@ def setup_auto(time):
 
 @click.command()
 def auto_delete():
+    """deletes the auto booking from system"""
     desicison = input("Are you sure? (y/n) defalut=y")
     if desicison == "n":
         return
@@ -119,6 +145,7 @@ def auto_delete():
 @click.command()
 @click.option("--enable/--disable", '-e/-d')
 def auto_activation(enable):
+    """enable or disable auto booking (--enable/--disable) (-e/-d)"""
     if enable:
         power.toggle_activation(False)
         return
@@ -127,7 +154,13 @@ def auto_activation(enable):
 
 @click.command()
 def auto_info():
-    power.get_task_info()
+    """Gives info of auto booking task, mostly used to debug"""
+    if power.check_if_task_exsists():
+
+        power.get_task_info()
+        return
+
+    print("There has not been made a task yet")
 
 
 

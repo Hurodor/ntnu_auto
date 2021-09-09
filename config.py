@@ -1,7 +1,9 @@
-import keyring
+import os
 import json
-from getpass import getpass
+import keyring
 import pathlib
+from getpass import getpass
+
 
 path_to_project_folder = pathlib.Path(__file__).parent.resolve()
 json_path = str(path_to_project_folder) + "\settings.json"
@@ -11,6 +13,28 @@ chrome_driver_paths = {
     'l': 'drivers/chromedriver_linux',
     'm': 'drivers/chromedriver_mac'
 }
+
+# this will create settings file
+def make_settings_file():
+    settings_format = {
+        "ntnu": {
+            "username": ""
+        },
+        "driver_path": "",
+        "room_settings": {
+            "start_time": "08:00",
+            "duration": "04:00",
+            "days": 14,
+            "area": "Gl\u00f8shaugen",
+            "building": "Elektro E/F",
+            "min_people": 0,
+            "room_id": "E204",
+            "description_text": "Studering"
+        }
+    }
+
+    with open(json_path, 'w') as w:
+        json.dump(settings_format, w)
 
 
 # reads settings from settings.json
@@ -57,4 +81,8 @@ class Config:
 
 
 if __name__ == '__main__':
+    # if the file does not already exists make it
+    if not os.path.isfile(json_path):
+        make_settings_file()
+
     setup()
